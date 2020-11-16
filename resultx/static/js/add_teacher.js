@@ -20,13 +20,7 @@ $(document).on('submit', '#submit', function(e) {
         },
     });
 });
-// Material Select Initialization
-$(document).ready(function() {
-    $('.mdb-select').materialSelect();
-});
+
 $('.demo').dropdown({
     multipleMode: 'label',
-    choice: function() {
-        // console.log(arguments,this);
-    }
 });

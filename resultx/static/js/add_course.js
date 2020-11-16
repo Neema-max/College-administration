@@ -2,7 +2,7 @@ $(document).on('submit', '#submit', function(e) {
     e.preventDefault();
     let dataa = document.getElementById('submit');
     let fdata = new FormData(dataa);
-    console.log(fdata);
+    fdata.append('subjects', $('#select').val());
     $.ajax({
         type: "POST",
         url: '.',
@@ -12,11 +12,15 @@ $(document).on('submit', '#submit', function(e) {
         success: function(data) {
             console.log(data.message);
             if (data.result == 'success') {
-                if (data.admin == 'false')
-                    window.location.href = '/dashboard/';
+                window.location.href = '/dashboard/';
             } else {
                 $('#error').html(data.message);
             }
         },
     });
+});
+
+
+$('.demo').dropdown({
+    multipleMode: 'label',
 });

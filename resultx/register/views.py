@@ -3,13 +3,13 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.hashers import make_password ,is_password_usable
-from .models import student,teachers,administrator,profile,subjects
+from .models import student,teachers,administrator,profile,subjects,courses
 import re 
  #Create your views here.
 
 
 
-
+#clear 
 def add_subject(request):
     if request.user.is_authenticated:
         user = request.user
@@ -55,6 +55,9 @@ def check(email):
     else:  
         return False
 
+
+
+#clear
 def add_teacher(request):
     if request.user.is_authenticated:
         user = request.user
@@ -77,7 +80,7 @@ def add_teacher(request):
                 username =  username.strip()
                 p1 =request.POST['p1']
                 p2 = request.POST['p2']
-                subId = request.POST.get('subjects')
+                subb = request.POST.get('subjects')
                 lev = request.POST['profile']
                 regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')     
                 if  User.objects.filter(username = username):
@@ -140,69 +143,63 @@ def add_teacher(request):
                         r.save()
                         x = profile(user= r,lev = int(lev))
                         x.save()
+                        subId = subb.split(',')
+                        t = teachers.objects.filter(profile=x).first()
+                        for x in subId:
+                            s = subjects.objects.filter(s_id= x).first()
+                            t.subject.add(s)    
                         data = {
                             'result' : 'success',
                         }
                         return JsonResponse(data)
             return render(request,'add_teacher.html',params)
     return redirect(reverse('dashboard'))
-
+#pending....
 def add_course(request):
     if request.user.is_authenticated:
         user = request.user
         pro = profile.objects.filter(user=user).first()
+        sub = subjects.objects.all()
+        params = {
+            'subject' : sub,
+        }
+        if not sub and int(pro.lev) == 3:
+            return redirect(reverse('add_subject'))
         if int(pro.lev) == 3:
             if request.method =="POST":
-                username = request.POST['username']
-                username = username.strip()
-                p1 =request.POST['p1']
-                p2 = request.POST['p2']
-                lev = request.POST['profile']
-                regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')  
-                #print(username)   
-                if  User.objects.filter(username = username):
+                name = request.POST['name']
+                name= name.strip()
+                c_id = request.POST['id']
+                c_id = c_id.strip()
+                subb = request.POST.get('subjects')
+                regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')     
+                if  courses.objects.filter(c_id=c_id) :
+                    data ={
+                        'result' : 'error',
+                        'message' : 'course id taken',
+                    }
+                    return JsonResponse(data)
+                elif courses.objects.filter(name=name):
                     data={
                         'result' : 'error',
-                        'message' : 'username taken',
-                    }
-                    return JsonResponse(data)
-                elif p1 != p2:
-                    data={
-                        'result' :'error',
-                        'message' : 'password mismatch',
-                    }
-                    return JsonResponse(data)
-                elif len(p1)<8:
-                    data={
-                        'result' : 'error',
-                        'message' : 'length of password must be 8 character'
-                    }
-                elif p1.isnumeric():
-                    data={
-                        'result' :'error',
-                        'message' : 'password cannot be entierly numeric',
-                    }
-                    return JsonResponse(data)
-                elif  regex.search(p1) is None: 
-                    data={
-                        'result':'error',
-                        'message': 'Password must contain special character',
+                        'message' : 'course name taken',
                     }
                     return JsonResponse(data)
                 else :
-                    password = make_password(p1)
-                    if is_password_usable(password):
-                        r = User(username= username,password = password)
-                        r.save()
-                        x = profile(user= r,lev = int(lev))
-                        x.save()
-                        data = {
-                            'result' : 'success',
-                        }
-                        return JsonResponse(data)
-            return render(request,'add_course.html')
+                    r = courses(name=name,c_id=c_id)
+                    r.save()
+                    subId = subb.split(',')
+                    for x in subId:
+                        s = subjects.objects.filter(s_id= x).first()
+                        r.subjects.add(s)    
+                    data = {
+                        'result' : 'success',
+                    }
+                    return JsonResponse(data)
+            return render(request,'add_course.html',params)
     return redirect(reverse('dashboard'))
 
+#clear
 def add_admin(request):
     if request.user.is_authenticated:
         user = request.user
@@ -267,11 +264,11 @@ def add_admin(request):
     return redirect(reverse('dashboard'))
 
 
-
+#clear
 def log_out(request):
     logout(request)
     return redirect(reverse('getin'))
-
+#clear
 def dashboard(request):
     if not request.user.is_authenticated:
         return redirect(reverse("getin"))
@@ -284,6 +281,7 @@ def dashboard(request):
         return render(request,'teacher_dashboard.html')
     elif int(pro.lev) == 3 :
         return render(request,'admin_dashboard.html')
+#clear
 def getin(request):
     if request.method =='POST':
         u = request.POST['uname']
