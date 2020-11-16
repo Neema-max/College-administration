@@ -1,0 +1,23 @@
+{%load static%}
+<link rel="stylesheet" href="{% static 'css/jquery.dropdown.css' %}">
+<form id='submit'>
+    {%csrf_token%}
+    <input type='text' name='firstname' placeholder="firstname" />
+    <input type='text' name='lastname' placeholder="lastname" />
+    <input type='email' name='email' placeholder="email" />
+    <input type='text' name='username' placeholder="username" />
+    <input type='password' name='p1' placeholder="password" />
+    <input type="password" name='p2' placeholder="conform password" />
+    <div class='demo'>
+        <select multiple style="display: none;" id='select' multiple>
+        {%for c in courses %}
+        <option value='{{ c.c_id }}' >{{ c.name}}</option>
+        {%endfor%}
+    </select>
+    </div>
+    <input type='submit' name='submit' />
+    <div id='error'></div>
+</form>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="{% static 'js/jquery.dropdown.js'%}"></script>
+<script src='{% static "js/add_student.js"%}' type="text/javascript"></script>

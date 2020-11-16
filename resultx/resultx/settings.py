@@ -76,9 +76,9 @@ WSGI_APPLICATION = 'resultx.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'resultx',
+        'NAME': 'valorant',
         'USER' : 'root',
-        'PASSWORD':'root',
+        'PASSWORD':'1234',
         'PORT' : 3306,
         'HOST': '127.0.0.1',
     }

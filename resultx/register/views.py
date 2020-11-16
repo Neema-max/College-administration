@@ -8,6 +8,33 @@ import re
  #Create your views here.
 
 
+def add_student(request):
+    if request.user.is_authenticated:
+        user = request.user
+        pro = profile.objects.filter(user=user).first()
+        if int(pro.lev) == 3:
+            if request.method =='POST':
+                fname = request.POST['firstname']
+                lname = request.POST['lastname']
+                print(fname)
+                if fname == 'Palash' and fname is not None :
+                    data={
+                        'result' : 'error',
+                        'message' : 'palash is noob'
+                    }
+                    return JsonResponse(data)
+            par={ 'courses': courses.objects.all() }
+            return render (request,'add_student.html',par)
+        else:
+            return redirect(reverse('dashboard'))
+
+
+    else:
+        return redirect(reverse('dashboard'))
+
+
+
+
 
 #clear 
 def add_subject(request):
