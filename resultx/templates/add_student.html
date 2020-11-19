@@ -8,13 +8,11 @@
     <input type='text' name='username' placeholder="username" />
     <input type='password' name='p1' placeholder="password" />
     <input type="password" name='p2' placeholder="conform password" />
-<<<<<<< HEAD
     <select name="course" id='select'>
     {%for c in courses %}
     <option value='{{ c.c_id }}' >{{ c.c_id }} {{ c.name}}</option>
     {%endfor%}
     </select>
-=======
     <div class='demo'>
         <select multiple style="display: none;" id='select' multiple>
         {%for c in courses %}
@@ -22,7 +20,6 @@
         {%endfor%}
     </select>
     </div>
->>>>>>> 1d1307486053c14515742e8c21894d0351dea52d
     <input type='submit' name='submit' />
     <div id='error'></div>
 </form>

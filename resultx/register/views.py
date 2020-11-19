@@ -8,6 +8,7 @@ import re
  #Create your views here.
 
 
+
 def link_course_teacher(request,id):
     course = courses.objects.filter(id=id).first()
     sub = course.subjects.all()
