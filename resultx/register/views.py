@@ -8,6 +8,22 @@ import re
  #Create your views here.
 
 
+
+def link_course_teacher(request,id):
+    course = courses.objects.filter(id=id).first()
+    sub = course.subjects.all()
+    teacher = teachers.objects.all()
+    params = {
+        'course' : course,
+        'subjects' : sub,
+        'teachers' : teacher
+    }
+    return render(request,'link_course_teacher.html',params)
+
+
+
+
+#clear
 def add_student(request):
     if request.user.is_authenticated:
         user = request.user
@@ -27,8 +43,6 @@ def add_student(request):
             return render (request,'add_student.html',par)
         else:
             return redirect(reverse('dashboard'))
-
-
     else:
         return redirect(reverse('dashboard'))
 
@@ -46,7 +60,7 @@ def add_subject(request):
                 name = request.POST['name']
                 name = name.strip()
                 code =request.POST['code']
-                code = code.strip()     
+                code = code.strip()
                 if subjects.objects.filter(s_id=code):
                     data = {
                         'result' : 'error',
@@ -174,26 +188,30 @@ def add_teacher(request):
                         t = teachers.objects.filter(profile=x).first()
                         for x in subId:
                             s = subjects.objects.filter(s_id= x).first()
-                            t.subject.add(s)    
+                            t.subject.add(s)
                         data = {
                             'result' : 'success',
                         }
                         return JsonResponse(data)
             return render(request,'add_teacher.html',params)
     return redirect(reverse('dashboard'))
-#pending....
+#clear
 def add_course(request):
     if request.user.is_authenticated:
         user = request.user
         pro = profile.objects.filter(user=user).first()
         sub = subjects.objects.all()
+        teach = teachers.objects.all()
         params = {
             'subject' : sub,
+            'teacher' : teach,
         }
         if not sub and int(pro.lev) == 3:
             return redirect(reverse('add_subject'))
         if int(pro.lev) == 3:
             if request.method =="POST":
+                if request.POST['role'] == 'add_t_s':
+                    t=request.POST['teacher']
                 name = request.POST['name']
                 name= name.strip()
                 c_id = request.POST['id']
@@ -314,16 +332,27 @@ def getin(request):
         u = request.POST['uname']
         p = request.POST['password']
         if u is not None and p is not None:
+            print(u,p)
             user = authenticate(request, username=u, password=p)
             pro = profile.objects.filter(user=user)
             if user is not None and pro:
+                print(1)
                 login(request, user)
                 data = {
                     'result' : 'success',
                     'admin' : 'false'
                 }
                 return JsonResponse(data)
-            elif pro :
+            elif user is not None :
+                print(3) 
+                login(request,user)
+                data = {
+                    'result' : 'success',
+                    'admin' : 'true',
+                }
+                return JsonResponse(data)
+            else :
+                print(2)
                 message = ""
                 if User.objects.filter(username = u):
                     message = "incorrect password"
@@ -331,14 +360,7 @@ def getin(request):
                     message = "Username doesn't exist "
                 data = {
                     'result' : 'error',
-                    'message' : message
-                }
-                return JsonResponse(data)
-            elif user is not None : 
-                login(request,user)
-                data = {
-                    'result' : 'success',
-                    'admin' : 'true',
+                    'message' : message,
                 }
                 return JsonResponse(data)
     if request.user.is_authenticated:

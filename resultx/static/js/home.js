@@ -10,7 +10,7 @@ $(document).on('submit', '#submit', function(e) {
         processData: false,
         contentType: false,
         success: function(data) {
-            console.log(data.message);
+            console.log(data.result);
             if (data.result == 'success') {
                 if (data.admin == 'false')
                     window.location.href = '/dashboard/';
@@ -21,3 +21,7 @@ $(document).on('submit', '#submit', function(e) {
         },
     });
 });
+
+function form_submit() {
+    $('#submit').submit();
+}

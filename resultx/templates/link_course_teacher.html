@@ -1,0 +1,15 @@
+{% load filter%}
+
+<h1>{{ course.name }}</h1>
+
+<form>
+    {% for x in subjects %}
+    <h5>{{x.name}}</h5>
+    <select>
+        {% for t in teachers %}
+        {% if t.id|filter:x.id  %}
+            <option value='{{t.id}}' >{{t.profile.user.username}}</option>
+        {%endif%}
+        {%endfor%}
+    </select> {% endfor %}
+</form>

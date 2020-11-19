@@ -8,6 +8,11 @@
     <input type='text' name='username' placeholder="username" />
     <input type='password' name='p1' placeholder="password" />
     <input type="password" name='p2' placeholder="conform password" />
+    <select name="course" id='select'>
+    {%for c in courses %}
+    <option value='{{ c.c_id }}' >{{ c.c_id }} {{ c.name}}</option>
+    {%endfor%}
+    </select>
     <div class='demo'>
         <select multiple style="display: none;" id='select' multiple>
         {%for c in courses %}
