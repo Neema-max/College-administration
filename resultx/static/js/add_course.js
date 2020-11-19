@@ -20,7 +20,19 @@ $(document).on('submit', '#submit', function(e) {
     });
 });
 
+function changeTeacher() {
+    var x = $('.sub').val();
+    $('.teacher').css({ 'display': 'none' });
+    $('.' + x).css({ 'display': 'block' });
+}
+let data = {};
+let data1 = [],
+    data2 = [];
 
-$('.demo').dropdown({
-    multipleMode: 'label',
-});
+function addsubject() {
+    data1.push($('.sub').val());
+    data1.push($('.tech').val());
+    $('#added').append("<div>" + $('.' + $('.sub').val()).html() + $('.tech').html() + "</div>");
+    console.log(data1);
+    console.log(data2);
+}

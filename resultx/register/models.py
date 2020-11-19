@@ -23,11 +23,15 @@ class teachers(models.Model):
     subject = models.ManyToManyField(subjects)
     def __str__(self):
         return self.profile.user.username
-
+class  c_teacher_sub(models.Model):
+    subject = models.ForeignKey(subjects,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(teachers,on_delete=models.CASCADE)
+    def __str__(self):
+        return self.subject.name + " " + self.teacher.profile.user.username
 class courses(models.Model):
     name = models.CharField(max_length=200,null= False)
     c_id = models.CharField(max_length=20,null=True)
-    subjects = models.ManyToManyField(subjects)
+    c_teacher = models.ManyToManyField(c_teacher_sub)
     created_at=models.DateTimeField(default=datetime.datetime.now)
     updated_at=models.DateTimeField(default=datetime.datetime.now)
     def __str__(self):

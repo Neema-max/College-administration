@@ -1,16 +1,24 @@
-{%load static%}
+{%load static%} {%load filter%}
 <link rel="stylesheet" href="{% static 'css/jquery.dropdown.css' %}">
 <form id='submit'>
     {%csrf_token%}
     <input type='text' name='name' />
     <input type='text' name='id' />
-    <div class='demo'>
-        <select style='display: none;' id='select' multiple>
-        {%for s in subject %}
-        <option value='{{ s.s_id }}' >{{ s.s_id }} {{ s.name}}</option>
+    <div id='added'>
+    </div>
+    <select name='subject' class='sub' onchange='changeTeacher()'>
+        <option> </option>
+        {% for x in subject %}
+        <option value='{{x.id}}'  >{{x.s_id}} {{x.name}}</option>
         {%endfor%}
     </select>
-    </div>
+    <select class='teach'>
+        <option> </option>
+        {% for x in teacher %} {% for y in subject %} {% if x.id|filter:y.id %}
+        <option value='{{x.id}}' class='teacher {{y.id}}' id='{{x.id}}' style='display: none;'>{{x.profile.user.username}}</option>
+        {%endif%} {%endfor%} {%endfor%}
+    </select>
+    <button class="addsbject" onclick='addsubject()'>save and add more</button>
     <input type='submit' name='submit' />
     <div id='error'></div>
 </form>
