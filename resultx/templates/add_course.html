@@ -6,19 +6,21 @@
     <input type='text' name='id' />
     <div id='added'>
     </div>
-    <select name='subject' class='sub' onchange='changeTeacher()'>
+    <select class='sub' onchange='changeTeacher()'>
         <option> </option>
         {% for x in subject %}
-        <option value='{{x.id}}'  >{{x.s_id}} {{x.name}}</option>
+        <option value='{{x.id}}' id='{{x.id}}'  >{{x.s_id}} {{x.name}}</option>
         {%endfor%}
     </select>
     <select class='teach'>
         <option> </option>
-        {% for x in teacher %} {% for y in subject %} {% if x.id|filter:y.id %}
-        <option value='{{x.id}}' class='teacher {{y.id}}' id='{{x.id}}' style='display: none;'>{{x.profile.user.username}}</option>
+        {% for x in teacher %} 
+        <option style="display: none;" id='{{x.id}}_teacher'>{{x.profile.user.username}}</option>
+        {% for y in subject %} {% if x.id|filter:y.id %}
+        <option value='{{x.id}}' class='teacher {{y.id}}' style='display: none;'>{{x.profile.user.username}}</option>
         {%endif%} {%endfor%} {%endfor%}
     </select>
-    <button class="addsbject" onclick='addsubject()'>save and add more</button>
+    <button class="addsbject" onclick='addsubject()' type='button'>save and add more</button>
     <input type='submit' name='submit' />
     <div id='error'></div>
 </form>

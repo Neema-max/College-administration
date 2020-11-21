@@ -43,6 +43,8 @@ class administrator(models.Model):
 class student(models.Model):
     profile = models.OneToOneField(profile,on_delete = models.CASCADE)
     course = models.ForeignKey(courses,on_delete = models.CASCADE)
+    def __str__(self):
+        return self.profile.user.username
 
 
 @receiver(post_save, sender=profile)

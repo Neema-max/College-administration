@@ -1,0 +1,6 @@
+{%load co_sub %} {%for c in courses%}
+<h2>{{c.c_id}} {{c.name}}</h2>
+{%for x in c_sub %} {% if c.id|co_sub:x.id %}
+<h4>{{x}}</h4>
+{%endif%} {%endfor%}
+<a href='{{c.id}}'> delete</a> {%endfor%}

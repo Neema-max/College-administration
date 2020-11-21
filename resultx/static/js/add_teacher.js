@@ -11,7 +11,6 @@ $(document).on('submit', '#submit', function(e) {
         processData: false,
         contentType: false,
         success: function(data) {
-            console.log(data.message);
             if (data.result == 'success') {
                 window.location.href = '/dashboard/';
             } else {
