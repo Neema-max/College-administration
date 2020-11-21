@@ -9,17 +9,11 @@
     <input type='password' name='p1' placeholder="password" />
     <input type="password" name='p2' placeholder="conform password" />
     <select name="course" id='select'>
+    <option></option>
     {%for c in courses %}
-    <option value='{{ c.c_id }}' >{{ c.c_id }} {{ c.name}}</option>
+    <option value='{{ c.id }}' >{{ c.name}}</option>
     {%endfor%}
     </select>
-    <div class='demo'>
-        <select multiple style="display: none;" id='select' multiple>
-        {%for c in courses %}
-        <option value='{{ c.c_id }}' >{{ c.name}}</option>
-        {%endfor%}
-    </select>
-    </div>
     <input type='submit' name='submit' />
     <div id='error'></div>
 </form>

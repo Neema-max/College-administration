@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'register',
+    'delete',
 ]
 
 MIDDLEWARE = [
@@ -76,9 +77,9 @@ WSGI_APPLICATION = 'resultx.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'valorant',
+        'NAME': 'resultx',
         'USER' : 'root',
-        'PASSWORD':'1234',
+        'PASSWORD':'root',
         'PORT' : 3306,
         'HOST': '127.0.0.1',
     }

@@ -3,8 +3,9 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.hashers import make_password ,is_password_usable
-from .models import student,teachers,administrator,profile,subjects,courses
+from .models import student,teachers,administrator,profile,subjects,courses,c_teacher_sub
 import re 
+import itertools
  #Create your views here.
 
 
@@ -31,14 +32,91 @@ def add_student(request):
         if int(pro.lev) == 3:
             if request.method =='POST':
                 fname = request.POST['firstname']
+                fname=fname.strip()
                 lname = request.POST['lastname']
-                print(fname)
-                if fname == 'Palash' and fname is not None :
+                lname=lname.strip()
+                email = request.POST['email']
+                email= email.strip()
+                uname = request.POST['username']
+                uname=uname.strip()
+                p1 = request.POST['p1']
+                p2 = request.POST['p2']
+                c = request.POST['course']
+                regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')   
+                if  User.objects.filter(username = uname):
                     data={
                         'result' : 'error',
-                        'message' : 'palash is noob'
+                        'message' : 'username taken',
                     }
                     return JsonResponse(data)
+                elif ' ' in uname:
+                    data={
+                        'result' : 'error',
+                        'message' : 'username cannot contain blank space',
+                    } 
+                    return JsonResponse(data)
+                elif p1 != p2:
+                    data={
+                        'result' :'error',
+                        'message' : 'password mismatch',
+                    }
+                    return JsonResponse(data)
+                elif len(p1)<8:
+                    data={
+                        'result' : 'error',
+                        'message' : 'length of password must be 8 character'
+                    }
+                elif p1.isnumeric():
+                    data={
+                        'result' :'error',
+                        'message' : 'password cannot be entierly numeric',
+                    }
+                    return JsonResponse(data)
+                elif  regex.search(p1) is None: 
+                    data={
+                        'result':'error',
+                        'message': 'Password must contain special character',
+                    }
+                    return JsonResponse(data)
+                elif not check(email):
+                    data={
+                        'result':'error',
+                        'message': 'Invalid email',
+                    }
+                    return JsonResponse(data)
+                elif lname == '':
+                    data={
+                        'result':'error',
+                        'message': 'Last name cannot be blank',
+                    }
+                    return JsonResponse(data)  
+                elif fname == '':
+                    data={
+                        'result':'error',
+                        'message': 'First name cannot be blank',
+                    }
+                    return JsonResponse(data)
+                else:
+                    password = make_password(p1) 
+                    if is_password_usable(password):
+                        r = User(first_name=fname,last_name=lname,username=uname,password=password,email=email)
+                        r.save()
+                        p = profile(user=r,lev=1)
+                        p.save()
+                        fk_co =  courses.objects.filter(id = c).first()
+                        s = student(profile=p,course=fk_co)
+                        s.save()
+                        data={
+                            'result':'success',
+                        }
+                        return JsonResponse(data)
+                    else:
+                        data={
+                            'result' : 'error',
+                            'message' : 'password not usable',
+                        }
+                        return JsonResponse(data)
+
             par={ 'courses': courses.objects.all() }
             return render (request,'add_student.html',par)
         else:
@@ -121,7 +199,7 @@ def add_teacher(request):
                 username =  username.strip()
                 p1 =request.POST['p1']
                 p2 = request.POST['p2']
-                subb = request.POST.get('subjects')
+                subb = request.POST['subjects']
                 lev = request.POST['profile']
                 regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')     
                 if  User.objects.filter(username = username):
@@ -188,6 +266,8 @@ def add_teacher(request):
                         t = teachers.objects.filter(profile=x).first()
                         for x in subId:
                             s = subjects.objects.filter(s_id= x).first()
+                            z= c_teacher_sub(subject=s,teacher=t)
+                            z.save()
                             t.subject.add(s)
                         data = {
                             'result' : 'success',
@@ -210,15 +290,13 @@ def add_course(request):
             return redirect(reverse('add_subject'))
         if int(pro.lev) == 3:
             if request.method =="POST":
-                if request.POST['role'] == 'add_t_s':
-                    t=request.POST['teacher']
+                t=request.POST['teachers']
                 name = request.POST['name']
                 name= name.strip()
                 c_id = request.POST['id']
                 c_id = c_id.strip()
-                subb = request.POST.get('subjects')
-                regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')     
-                if  courses.objects.filter(c_id=c_id) :
+                sub = request.POST['subjects']  
+                if  courses.objects.filter(c_id=c_id):
                     data ={
                         'result' : 'error',
                         'message' : 'course id taken',
@@ -233,10 +311,14 @@ def add_course(request):
                 else :
                     r = courses(name=name,c_id=c_id)
                     r.save()
-                    subId = subb.split(',')
-                    for x in subId:
-                        s = subjects.objects.filter(s_id= x).first()
-                        r.subjects.add(s)    
+                    sub = sub.split(',')
+                    t= t.split(',')
+                    for (x,y) in zip(sub,t):
+                        teacher = teachers.objects.filter(id=int(y)).first()
+                        subject = subjects.objects.filter(id=int(x)).first()
+                        s_t =  c_teacher_sub.objects.filter(subject=subject,teacher=teacher).first()
+                        r.c_teacher.add(s_t)
+
                     data = {
                         'result' : 'success',
                     }
@@ -366,4 +448,3 @@ def getin(request):
     if request.user.is_authenticated:
         return redirect(reverse("dashboard"))
     return render(request,'home.html')
-    

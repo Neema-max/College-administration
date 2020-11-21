@@ -1,0 +1,5 @@
+{%load filter%} {%for t in teacher%}
+<h3>{{t}}</h3>
+<a href='{{t.id}}'>delete</a> {%for s in subjects%} {% if t.id|filter:s.id %}
+<h4>{{s.name}}</h4>
+{%endif%} {%endfor%} {%endfor%}
